@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    <style>
+        
+        body{
+            height: 100vh;
+            width: 100%;
+            display: grid;
+            place-items: center;
+            
+        }
+        h1{
+            text-align: center;
+        }
+        .ck{
+            border: 2px black solid;
+            width: 450px;
+            height: 250px;
+            background-color: blueviolet;
+        }
+        .ak{
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <form onsubmit="saveToLocalStorage(event)">
+   <div class="ck">
+    <h1>FORM</h1>
+   <div>
+    <label>Name</label>
+    <br>
+    <input type="text" name="myname">
+    <br>
+    <label>E-mail</label>
+    <br>
+    <input type="text" name="myemail">
+    <br>
+    <br>
+    <div class="ak">
+        <button>submit</button>
+       </div> 
+   </div>
+   </div> 
+    </form>
+     <ul id='ListOfUsers'></ul>
+   <script>
+    function saveToLocalStorage(event) {
+    event.preventDefault();
+    const name =event.target.myname.value;
+    const email =event.target.myemail.value;
+    //obj.email krne multi user list add ho jata h main kaam h obj lgane ka
+    const obj ={
+        name,
+        email
+    }
+    localStorage.setItem(obj.email,JSON.stringify(obj));
+    showNewUserOnScreen(obj)
+}
+function showNewUserOnScreen(user){
+    const parentNode = document.getElementById('ListOfUsers');
+    const childHTML = `<li> ${user.name} - ${user.email} </li>` 
+    parentNode.innerHTML = parentNode.innerHTML + childHTML;
+}
+   </script>
+</body>
+</html>

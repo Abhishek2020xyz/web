@@ -1,84 +1,95 @@
-let onSubmit = document.getElementById("form");
-onSubmit.addEventListener("submit",addToLocal);
-
-// add to local storage
-
-function addToLocal(e){
-    // e.preventDefault();
-    let amount = document.getElementById("num").value;
-    let description = document.getElementById("des").value;
-    let catagory = document.getElementById("cat").value;
+function saveToLocalStorage(event) {
+    event.preventDefault();
+    const name = event.target.name.value;
+    const email = event.target.email.value;
+    const phonenumber = event.target.number.value;
+    // localStorage.setItem('name', name);
+    // localStorage.setItem('email', email);
+    // localStorage.setItem('phonenumber', phonenumber)
     const obj = {
-        amount : amount,
-        description : description,
-        catagory : catagory,
+        name,
+        email,
+        phonenumber
     }
-    if(obj.amount){
-        localStorage.setItem(obj.amount,JSON.stringify(obj))
-    }
-    axios.post("https://crudcrud.com/api/231a8de5bf8b45d0a95b36e56ca14a23/appointementData",obj)
+    
+    axios.post("https://crudcrud.com/api/39df5d2a67e440ddb7f35485780f073e/appointmentData",obj)
     .then((response)=>{
-        showNewUserOnScreen(response.data)
-        console.log(response)
+        showNewUserOnScreen(response)
+        console.log(response )
     })
     .catch((err)=>{
-        document.body.innerHTML = document.body.innerHTML + "<h4> something went wrong </h4>" //error handle k liye do not complesery 
         console.log(err)
     })
-//   localStorage.setItem(obj.amount,JSON.stringify(obj))
+    //localStorage.setItem(obj.email, JSON.stringify(obj))
+    //showNewUserOnScreen(obj)
 }
 
-// window event
-window.addEventListener("DOMContentLoaded",function(e){
-    const data=axios.get("https://crudcrud.com/api/231a8de5bf8b45d0a95b36e56ca14a23/appointementData")
+window.addEventListener("DOMContentLoaded", () => {
+    const data=axios.get("https://crudcrud.com/api/39df5d2a67e440ddb7f35485780f073e/appointmentData")
     .then((response)=>{
-        //console.log(response)
-        for(var i=0;i<response.data.length;i++){
-            showNewUserOnScreen(response.data[i])
+        console.log(response)
+        
+        for(var i=0;i<response.length;i++){
+            showNewUserOnScreen(response.data)
         }
     })
-    .catch((error)=>{
-        console.log(error)
+    .catch((err)=>{
+        console.log(err)
     })
     console.log(data)
-    })
-e.preventDefault();
-Object.keys(localStorage).forEach((key)=>{
-    // console.log(key)
-    let stringData = this.localStorage.getItem(key);
-    // console.log(stringData)
-    let data = JSON.parse(stringData);
-    showOnScreen(data);
-})
 })
 
-//  show On screen
+function showNewUserOnScreen(user){
+    document.getElementById('email').value = '';
+    document.getElementById('name').value = '';
+    document.getElementById('number').value ='';
+   
 
-function showOnScreen(obj){
-let list = document.getElementById("ui");
-let addData =`<li id=${obj.amount}>${obj.amount}-${obj.description}-${obj.catagory}<button onClick=deleteUser(${obj.amount})>Delete</button>
-<button onClick=editDetails(${obj.amount},\"${obj.description}\",\"${obj.catagory}\")>Edit</button></li>`
-list.innerHTML += addData;
+    const parentNode = document.getElementById('listOfUsers');
+    const childHTML = `<li id=${user._id}> ${user.name} - ${user.email}-${user.phonenumber}
+                            <button onclick=deleteUser('${user._id}')> Delete User </button>
+                            <button onclick=editUserDetails('${user.email}','${user.name}','${user.phonenumber}')>Edit User </button>
+                         </li>`
+
+    parentNode.innerHTML = parentNode.innerHTML + childHTML;
+    
 }
 
-function deleteUser(amount){
-    localStorage.removeItem(amount)
-    removeFromScreen(amount)
-}
+//Edit User
 
-function removeFromScreen(amount){
-    let parent = document.getElementById("ui");
-    let toBeRemove = document.getElementById(amount);
-    parent.removeChild(toBeRemove);
-}
+function editUserDetails(email, name, phonenumber){
 
+    document.getElementById('email').value = email;
+    document.getElementById('name').value = name;
+    document.getElementById('number').value =phonenumber;
 
-function editDetails(amount,des,cat){
-    // console.log(amo,des,cat)
-    document.getElementById("num").value = amount;
-    document.getElementById("des").value=des;
-    document.getElementById("cat").value = cat;
-    deleteUser(amount)
-}
+    deleteUser(email)
+ }
 
-console.log("hello");
+// deleteUser('abc@gmail.com')
+
+function deleteUser(Id){
+    
+                removeUserFromScreen(Id);
+            }
+            function removeUserFromScreen(Id){
+                const parentNode = document.getElementById('listOfUsers');
+                const childNodeToBeDeleted = document.getElementById(Id);
+
+                
+                if(childNodeToBeDeleted) {
+                    axios.delete(`https://crudcrud.com/api/39df5d2a67e440ddb7f35485780f073e/appointmentData/${Id}`)
+                    .then(removeFromScreen(Id))
+                    .catch((err)=>{
+                        console.log(err)
+                    })
+                }
+            }
+            function removeFromScreen(id){
+                
+                let parent = document.getElementById("listOfUsers");
+                let toBeRemove = document.getElementById(id);
+                
+                parent.removeChild(toBeRemove);
+            }
+
